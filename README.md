@@ -1,4 +1,4 @@
-# Usage #
+# Usage
 
 First, download your transactions from your Mint account. You can find the export link
 on the [transactions page](https://wwws.mint.com/transaction.event), in very small type
@@ -8,12 +8,12 @@ Then run the script, like so:
 
     mint-to-ledger [-h] csv_file ledger_file
 
-# Known Issues #
+# Known Issues
 
 There are a couple of problems with the resulting ledger due to incomplete information on
 Mint's part. In other words, they may or may not ever be fixed.
 
-## Transfers between accounts ## 
+## Transfers between accounts
 
 Mint represents a transfer between two of your own accounts by assigning the category 
 "Transfer" to the transaction appearing on each account statement. The script interprets
@@ -26,7 +26,7 @@ for Cash Spending", but haven't dealt with the transfers to and from accounts wi
 arbitrary names. It seems possible to allow for user-defined categories which are
 interpreted as transfers rather than expenses, but I haven't tried to implement this yet.
 
-## Non-transactional balance changes ##
+## Non-transactional balance changes
 
 If an account ever changes in value due to something other than a transaction (for 
 example, market movements affect the balance of your brokerage account), Mint fetches the
