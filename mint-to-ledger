@@ -1,0 +1,53 @@
+#!/usr/bin/env python
+
+# Reads a transactions .csv file exported from Mint.com and writes it out as a ledger .dat
+# file.
+
+import argparse
+import csv
+from datetime import datetime
+import re
+from textwrap import dedent
+
+expected_headers = ['Date', 'Description', 'Original Description', 'Amount', 
+    'Transaction Type', 'Category', 'Account Name', 'Labels', 'Notes']
+    
+parser = argparse.ArgumentParser()
+parser.add_argument("csv_file", help="exported transactions file from Mint")
+parser.add_argument("ledger_file", help="file to write ledger transaction list to")
+args = parser.parse_args()
+
+with open(args.csv_file) as mint_file:
+    mint_reader = csv.reader(mint_file)
+    transactions = [row for row in mint_reader]
+    
+headers, transactions = transactions[0], transactions[1:]
+
+if headers != expected_headers:
+    print "ERROR: Headers in %s did not match the expected Mint transaction file headers." % filename
+
+with open(args.ledger_file, 'w') as ledger_file:    
+    for t in transactions:
+        date = datetime.strptime(t[0], "%m/%d/%Y").strftime("%Y/%m/%d")
+        description = t[1]
+        from_account = re.sub(' +', ' ', t[6])  # ledger hates double spaces
+        balance = cashflow = t[3]
+        if t[4] == 'debit': 
+            type = "Expenses"
+            balance = "-%s" % balance
+        else: 
+            type = "Income" 
+            cashflow = "-%s" % cashflow
+        category = t[5]
+
+        # Mint has a special expense category for cash withdrawals, called "Transfer for
+        # Cash Spending", which is really a transfer from Assets:<XXX> to Assets:Cash.
+        if category == "Transfer for Cash Spending":
+            type = "Assets"
+            category = "Cash"
+        
+        print >>ledger_file, dedent("""\
+            %s * %s
+                Assets:%s  $ %s
+                %s:%s  $ %s
+        """ % (date, description, from_account, balance, type, category, cashflow))
