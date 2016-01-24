@@ -24,7 +24,7 @@ with open(args.csv_file) as mint_file:
 headers, transactions = transactions[0], transactions[1:]
 
 if headers != expected_headers:
-    print "ERROR: Headers in %s did not match the expected Mint transaction file headers." % filename
+    print("ERROR: Headers in %s did not match the expected Mint transaction file headers." % filename)
 
 with open(args.ledger_file, 'w') as ledger_file:    
     for t in transactions:
@@ -46,8 +46,8 @@ with open(args.ledger_file, 'w') as ledger_file:
             type = "Assets"
             category = "Cash"
         
-        print >>ledger_file, dedent("""\
+        print(dedent("""\
             %s * %s
                 Assets:%s  $ %s
                 %s:%s  $ %s
-        """ % (date, description, from_account, balance, type, category, cashflow))
+        """ % (date, description, from_account, balance, type, category, cashflow)), file=ledger_file)
